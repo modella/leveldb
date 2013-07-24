@@ -10,10 +10,11 @@
 
 ```js
 var model = require('modella');
-    level = require('modella-leveldb')('./mydb');
+var level = require('modella-leveldb')('./mydb');
+var uid = require('uid');
 
 var User = model('user')
-  .attr('_id')
+  .attr('id')
   .attr('name')
   .attr('email')
   .attr('password');
@@ -26,7 +27,8 @@ User.use(level);
 
 var user = new User;
 
-user.name('matt')
+user.id(uid(6))
+    .name('matt')
     .email('mattmuelle@gmail.com')
     .password('test');
 
