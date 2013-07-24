@@ -1,16 +1,16 @@
-# mongo
+# LevelDB
 
-Mongo plugin for [modella](https://github.com/modella/modella). Uses [learnboost/monk](https://github.com/learnboost/monk) for a clean mongo driver.
+LevelDB plugin for [modella](https://github.com/modella/modella).
 
 ## Installation
 
-    npm install modella-mongo
+    npm install modella-leveldb
 
 ## Example
 
 ```js
 var model = require('modella');
-    mongo = require('modella-mongo')('localhost/db');
+    level = require('modella-leveldb')('./mydb');
 
 var User = model('user')
   .attr('_id')
@@ -18,7 +18,7 @@ var User = model('user')
   .attr('email')
   .attr('password');
 
-User.use(mongo);
+User.use(level);
 
 /**
  * Initialize
@@ -37,15 +37,27 @@ user.save(function(err) {
 
 ## API
 
-By loading this plugin, model inherits:
+### Level(path, options)
 
-### model#index(attr, options)
+Initialize leveldb with a `path` to the database. If path doesn't exist, it will be created. `options` will be passed through to [levelup](https://github.com/rvagg/node-levelup)
 
-Index an attribute in mongo.
+### Static: Model.all([options], fn)
 
-```js
-  User.index('email', { unique : true });
-```
+Get all models
+
+### Static: Model.find(id, [options], fn)
+
+Find a model
+
+### Instance: model.save([options], fn)
+
+Save the model
+
+### Instance: model.remove([options], fn)
+
+Remove the model
+
+All `options` will be passed through to [levelup](https://github.com/rvagg/node-levelup).
 
 ## License
 
