@@ -1,0 +1,19 @@
+{
+  "name": "modella-leveldb",
+  "version": "0.0.1",
+  "description": "modella plugin for leveldb",
+  "keywords": [],
+  "author": "matt mueller <mattmuelle@gmail.com>",
+  "dependencies": {
+    "level": "0.10.0",
+    "debug": "~0.7.2"
+  },
+  "devDependencies": {
+    "modella": "*",
+    "mocha": "*",
+    "should": "*",
+    "pwd": "*",
+    "uid": "0.0.2"
+  },
+  "main": "index"
+}
