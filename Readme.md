@@ -41,21 +41,21 @@ user.save(function(err) {
 
 Initialize leveldb with a `path` to the database. If path doesn't exist, it will be created. `options` will be passed through to [levelup](https://github.com/rvagg/node-levelup)
 
-### Static: Model.all([options], fn)
+### Model.all([options], fn)
 
-Get all models
+Get all models (static method)
 
-### Static: Model.find(id, [options], fn)
+### Model.find(id, [options], fn)
 
-Find a model
+Find a model (static method)
 
-### Instance: model.save([options], fn)
+### model.save([options], fn)
 
-Save the model
+Save the model (instance method)
 
-### Instance: model.remove([options], fn)
+### model.remove([options], fn)
 
-Remove the model
+Remove the model (instance method)
 
 All `options` will be passed through to [levelup](https://github.com/rvagg/node-levelup).
 
