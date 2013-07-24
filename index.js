@@ -49,7 +49,6 @@ sync.all = function(options, fn) {
   });
 
   rs.on('data', function(data) {
-    console.log(data.value);
     buffer[buffer.length] = data.value;
   });
 
