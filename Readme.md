@@ -1,6 +1,6 @@
 # LevelDB
 
-LevelDB plugin for [modella](https://github.com/modella/modella).
+[LevelDB](https://code.google.com/p/leveldb/) plugin for [modella](https://github.com/modella/modella).
 
 ## Installation
 
