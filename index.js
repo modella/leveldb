@@ -100,7 +100,6 @@ sync.update = function(options, fn) {
   var json = this.toJSON();
   debug('saving... %j', json);
   var id = this.primary();
-  console.log(id);
   this.model.db.put(id, json, function(err) {
     if(err) return fn(err);
     debug('saved %j', json);
