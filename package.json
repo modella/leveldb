@@ -1,6 +1,6 @@
 {
   "name": "modella-leveldb",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "modella plugin for leveldb",
   "keywords": [],
   "author": "matt mueller <mattmuelle@gmail.com>",
