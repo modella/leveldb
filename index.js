@@ -16,10 +16,12 @@ module.exports = function(path, options) {
 
   var db = level(path, options);
 
+  // automatically cleanup on termination
+  process.on('SIGTERM', db.close.bind(this));
+
   return function(model) {
     model._sync = sync;
     model.db = db;
-
   };
 };
 
