@@ -20,16 +20,10 @@ module.exports = function(path, options) {
   process.on('SIGTERM', db.close.bind(this));
 
   return function(model) {
-    model._sync = sync;
     model.db = db;
+    for (fn in sync) model[fn] = sync[fn];
   };
 };
-
-/**
- * Sync Name
- */
-
-sync.name = 'leveldb';
 
 /**
  * All
