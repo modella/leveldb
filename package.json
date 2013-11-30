@@ -5,7 +5,7 @@
   "keywords": [],
   "author": "matt mueller <mattmuelle@gmail.com>",
   "dependencies": {
-    "level": "~0.17.0",
+    "level": "~0.18.x",
     "debug": "~0.7.2"
   },
   "devDependencies": {
