@@ -27,7 +27,8 @@
   "dependencies": {
     "debug": "0.7.x",
     "type-component": "0.0.1",
-    "xtend": "2.1.x"
+    "xtend": "2.1.x",
+    "map-series": "0.0.x"
   },
   "devDependencies": {
     "mocha-lcov-reporter": "0.0.x",

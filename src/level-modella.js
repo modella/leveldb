@@ -3,7 +3,8 @@
  */
 var debug = require('debug')('modella:level'),
     type = require('type-component'),
-    xtend = require('xtend');
+    xtend = require('xtend'),
+    series = require('map-series');
 
 // holds all the dbs, so that it can close them on process SIGTERM
 var dbs = [];
@@ -25,26 +26,19 @@ function get_callback(options, fn) {
   return type(options) === 'function' ? options : fn;
 }
 
-/* if a function is passed, then it sends the error through that
- * if not, it emits the error through the model
- *
- * @param {object} model
- * @param {error} err
- * @param {function} [fn]
- * @api private
- */
-function dispatch_error(model, err, fn) {
-  type(fn) === 'function' ? fn(err) : model.emit('error', err);
+// automatically cleanup on termination
+function close_all(done) {
+  series(dbs, function(db, fn) {
+    db.close(function(err) {
+      if(err) console.error(err);
+      fn();
+    });
+  }, function() {
+    if(done) done();
+  });
 }
 
-// automatically cleanup on termination
-process.on('SIGTERM', function() {
-  dbs.forEach(function(db) {
-    db.close(function (err) {
-      if(err) console.error(err);
-    });
-  });
-});
+process.on('SIGTERM', close_all);
 
 
 /* exports a function to be passed to `Model.use`
@@ -90,7 +84,7 @@ level_modella.put = level_modella.save = level_modella.update = function(options
   options = xtend(default_options, options);
 
   if (type(fn) !== 'function')
-    return dispatch_error(this, new Error('put() requires a callback argument'))
+    return this.emit('error', new Error('put() requires a callback argument'));
 
   var value = this.toJSON();
   var key = this.primary();
@@ -120,7 +114,7 @@ level_modella.get = function(key, options, fn) {
   options = xtend(default_options, options);
 
   if (type(fn) !== 'function')
-    return dispatch_error(this, new Error('get() requires key and callback arguments'));
+    return this.emit('error', new Error('get() requires key and callback arguments'));
 
   debug('get: %s', key);
   var self = this;
@@ -148,7 +142,7 @@ level_modella.remove = level_modella.del = function(options, fn) {
   options = xtend(default_options, options);
 
   if (type(fn) !== 'function')
-    return dispatch_error(this, new Error('remove() requires a callback argument'));
+    return this.emit('error', new Error('remove() requires a callback argument'));
 
   var key = this.primary();
   debug('remove: %s', key);
@@ -160,3 +154,9 @@ level_modella.remove = level_modella.del = function(options, fn) {
     fn(err);
   });
 };
+
+/* closes all db instances
+ *
+ * @api private
+ */
+module.exports.__close_all = close_all;

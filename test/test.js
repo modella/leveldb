@@ -53,6 +53,11 @@ describe('store', function() {
     assert(type(User.save) === 'function');
     assert(type(User.remove) === 'function');
   });
+
+  it('close all', function(done) {
+    User.use(store(level(location)));
+    User.__close_all(done);
+  });
 });
 
 describe('put', function() {
