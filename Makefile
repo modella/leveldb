@@ -1,5 +1,5 @@
 REPORTER = spec
-UI = qunit
+UI = bdd
 
 test:
 	@NODE_ENV=test ./node_modules/.bin/mocha -u $(UI) -R $(REPORTER) -c -G -b

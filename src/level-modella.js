@@ -3,7 +3,7 @@
  */
 var debug = require('debug')('modella:level'),
     type = require('type-component'),
-    xtend = require('xtend')
+    xtend = require('xtend');
 
 // holds all the dbs, so that it can close them on process SIGTERM
 var dbs = [];
@@ -11,7 +11,7 @@ var dbs = [];
 var default_options = {
   valueEncoding: 'json',
   keyEncoding: 'utf8'
-}
+};
 
 /* Parses options/fn so that it handles situations where no options
  * are passed to the function
@@ -118,7 +118,7 @@ level_modella.get = function(key, options, fn) {
   options = xtend(default_options, options);
 
   if (type(fn) !== 'function')
-    return dispatch_error(this, new Error('get() requires key and callback arguments'))
+    return dispatch_error(this, new Error('get() requires key and callback arguments'));
 
   debug('get: %s', key);
   var self = this;
@@ -146,7 +146,7 @@ level_modella.remove = level_modella.del = function(options, fn) {
   options = xtend(default_options, options);
 
   if (type(fn) !== 'function')
-    return dispatch_error(this, new Error('remove() requires a callback arguments'))
+    return dispatch_error(this, new Error('remove() requires a callback arguments'));
 
   var key = this.primary();
   debug('remove: %s', key);

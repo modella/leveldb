@@ -36,7 +36,8 @@
     "mocha": "1.10.x",
     "modella": "*",
     "pwd": "0.0.x",
-    "uid": "0.0.x"
+    "uid": "0.0.x",
+    "level": "0.18.x"
   },
   "engines": {
     "node": ">=0.8"
