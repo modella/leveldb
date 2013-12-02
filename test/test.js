@@ -1,4 +1,4 @@
-var store = process.env.LEVEL_COV ? require('../lib-cov/level_modella') : require('../');
+var store = process.env.LEVEL_COV ? require('../lib-cov/level-modella') : require('../');
 var model = require('modella');
 var level = require('level');
 var uid = require('uid');
