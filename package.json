@@ -22,7 +22,7 @@
     "url": "git://github.com/modella/level-modella.git"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test test-coveralls"
   },
   "dependencies": {
     "debug": "0.7.x",
