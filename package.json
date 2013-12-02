@@ -1,19 +1,44 @@
 {
-  "name": "modella-leveldb",
-  "version": "0.0.5",
-  "description": "modella plugin for leveldb",
-  "keywords": [],
-  "author": "matt mueller <mattmuelle@gmail.com>",
+  "name": "level-modella",
+  "version": "0.1.0",
+  "description": "modella plugin for level",
+  "keywords": [
+    "level",
+    "modella"
+  ],
+  "homepage": "https://github.com/modella/level-modella",
+  "bugs": "http://github.com/modella/level-modella/issues",
+  "license": "MIT",
+  "author": "Matt Mueller <mattmuelle@gmail.com> (http://mat.io)",
+  "contributors": [
+    "Sérgio Ramos <mail@sergioramos.me> (http://sergioramos.me/)"
+  ],
+  "main": "src/vlevel-modella.js",
+  "directories": {
+    "lib": "src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/modella/level-modella.git"
+  },
+  "scripts": {
+    "test": "make test"
+  },
   "dependencies": {
-    "level": "~0.18.x",
-    "debug": "~0.7.2"
+    "debug": "0.7.x",
+    "type-component": "0.0.1",
+    "xtend": "2.1.x"
   },
   "devDependencies": {
+    "mocha-lcov-reporter": "0.0.x",
+    "jscoverage": "0.3.x",
+    "coveralls": "2.0.x",
+    "mocha": "1.10.x",
     "modella": "*",
-    "mocha": "*",
-    "should": "*",
-    "pwd": "*",
-    "uid": "0.0.2"
+    "pwd": "0.0.x",
+    "uid": "0.0.x"
   },
-  "main": "index"
+  "engines": {
+    "node": ">=0.8"
+  }
 }
