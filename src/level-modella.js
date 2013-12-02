@@ -67,6 +67,8 @@ var level_modella = module.exports = function(db) {
   dbs.push(db);
 
   return function(model) {
+    model.db = db;
+
     Object.keys(level_modella).forEach(function(proto) {
       model[proto] = level_modella[proto];
     });
@@ -88,7 +90,7 @@ level_modella.put = level_modella.save = level_modella.update = function(options
   options = xtend(default_options, options);
 
   if (type(fn) !== 'function')
-    return dispatch_error(this, new Error('put() requires a callback arguments'))
+    return dispatch_error(this, new Error('put() requires a callback argument'))
 
   var value = this.toJSON();
   var key = this.primary();
@@ -146,12 +148,12 @@ level_modella.remove = level_modella.del = function(options, fn) {
   options = xtend(default_options, options);
 
   if (type(fn) !== 'function')
-    return dispatch_error(this, new Error('remove() requires a callback arguments'));
+    return dispatch_error(this, new Error('remove() requires a callback argument'));
 
   var key = this.primary();
   debug('remove: %s', key);
 
-  this.db.del(key, options, function(err) {
+  this.model.db.del(key, options, function(err) {
     if (err) return fn(err);
 
     debug('success remove: %s', key);

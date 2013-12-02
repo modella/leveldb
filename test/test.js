@@ -1,47 +1,155 @@
-/**
- * Module Dependencies
- */
-
+var store = process.env.LEVEL_COV ? require('../lib-cov/level_modella') : require('../');
 var model = require('modella');
-var level = require('../')(__dirname + '/mydb');
+var level = require('level');
 var uid = require('uid');
+var mkdirp = require('mkdirp');
+var type = require('type-component');
+var leveldown = require('leveldown');
+var assert = require('assert');
+var path = require('path');
 
-var User = model('user')
-  .attr('id')
-  .attr('name')
-  .attr('email')
-  .attr('password');
+var User, location = path.join(__dirname, 'db'), user = {
+  id: uid(),
+  name: 'seth cohen'
+};
 
-User.use(level);
+var close = function(done) {
+  if(type(User.db) === 'undefined') return done();
 
-/**
- * Initialize
- */
+  User.db.close(function() {
+    leveldown.destroy(location, done);
+  });
+};
 
-var user = new User;
+var use = function(done) {
+  User.use(store(level(location, done)));
+};
 
-user.id(uid(6))
-    .name('matt')
-    .email('mattmuelle@gmail.com')
-    .password('test');
-
-// user.save(function(err, user) {
-//   console.log(user);
-// });
-
-User.all(function(err, users) {
-  console.log(users);
+beforeEach(function(done) {
+  mkdirp(location, done);
 });
 
-// User.find('ewcbix', function(err, user) {
-//   if (err) throw err;
-//   console.log(user);
-// });
+beforeEach(function() {
+  User = model('User');
+  User.attr('id');
+  User.attr('name');
+});
 
-// User.find('ewcbix', function(err, user) {
-//   if (err) throw err;
-//   user.remove(function(err) {
-//     if (err) throw err;
-//     console.log('removed');
-//   });
-// });
+afterEach(close);
+
+describe('store', function() {
+  afterEach(close);
+
+  it('store() should return a fn', function() {
+    var db = level(location);
+    var adapter = store(db);
+    assert(type(adapter) === 'function');
+    User = {db: db} // make sure it's cleaned
+  });
+
+  it('should fill static methods', function() {
+    User.use(store(level(location)));
+    assert(type(User.get) === 'function');
+    assert(type(User.save) === 'function');
+    assert(type(User.remove) === 'function');
+  });
+});
+
+describe('put', function() {
+  beforeEach(use);
+  afterEach(close);
+
+  it('should save', function(done) {
+    var model = User(user);
+
+    model.save(function(err, model) {
+      if(err) return done(err);
+
+      model.model.db.get(model.id(), {
+        valueEncoding: 'json'
+      }, function(err, value) {
+        if(err) return done(err);
+
+        assert(value.id === model.id());
+        assert(value.name === model.name());
+
+        done()
+      });
+    });
+  });
+
+  it('should emit when no callback is passed', function(done) {
+    var model = User(user);
+
+    model.once('error', function(err) {
+      assert(err && err.message === 'put() requires a callback argument');
+      done();
+    });
+
+    store.save.call(model);
+  });
+});
+
+describe('remove', function() {
+  beforeEach(use);
+  afterEach(close);
+
+  it('should remove', function(done) {
+    var model = User(user);
+
+    model.save(function(err, model) {
+      if(err) return done(err);
+
+      model.remove(function(err) {
+        if(err) return done(err);
+
+        model.model.db.get(model.id(), function(err) {
+          assert(err && err.type === 'NotFoundError')
+          done();
+        });
+      });
+    });
+  });
+
+  it('should emit when no callback is passed', function(done) {
+    var model = User(user);
+
+    model.once('error', function(err) {
+      assert(err && err.message === 'remove() requires a callback argument');
+      done();
+    });
+
+    store.remove.call(model);
+  });
+});
+
+describe('get', function() {
+  beforeEach(use);
+  afterEach(close);
+
+  it('should get', function(done) {
+    var model = User(user);
+
+    model.save(function(err, model) {
+      if(err) return done(err);
+
+      User.get(model.id(), function(err, value) {
+        if(err) return done(err);
+
+        assert(value.id() === model.id());
+        assert(value.name() === model.name());
+
+        done();
+      });
+    });
+  });
+
+  it('should emit when no callback/key is passed', function(done) {
+    User.once('error', function(err) {
+      assert(err && err.message === 'get() requires key and callback arguments');
+      done();
+    });
+
+    User.get();
+  });
+});

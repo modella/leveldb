@@ -13,7 +13,7 @@
   "contributors": [
     "Sérgio Ramos <mail@sergioramos.me> (http://sergioramos.me/)"
   ],
-  "main": "src/vlevel-modella.js",
+  "main": "src/level-modella.js",
   "directories": {
     "lib": "src"
   },
@@ -37,7 +37,9 @@
     "modella": "*",
     "pwd": "0.0.x",
     "uid": "0.0.x",
-    "level": "0.18.x"
+    "level": "0.18.x",
+    "leveldown": "0.10.x",
+    "mkdirp": "0.3.x"
   },
   "engines": {
     "node": ">=0.8"
