@@ -6,6 +6,7 @@ var debug = require('debug')('modella:level'),
     xtend = require('xtend'),
     through = require('ordered-through'),
     series = require('map-series'),
+    cursor = require('level-cursor'),
     level = require('level');
 
 // holds all the dbs, so that it can close them on process SIGTERM
@@ -71,6 +72,9 @@ var level_modella = module.exports = function(db) {
     Object.keys(level_modella).forEach(function(proto) {
       model[proto] = level_modella[proto];
     });
+
+    model.get.all = level_modella.getAll(model);
+    model.remove.all = level_modella.removeAll(model);
   };
 };
 
@@ -117,19 +121,43 @@ level_modella.put = level_modella.save = level_modella.update = function(options
 level_modella.get = function(key, options, fn) {
   fn = get_callback(options, fn);
   options = xtend(default_options, options);
-
-  if (type(fn) !== 'function')
-    return this.emit('error', new Error('get() requires key and callback arguments'));
-
-  debug('get: %s', key);
   var self = this;
 
-  this.db.get(key, options, function(err, value) {
+  if (type(fn) !== 'function')
+    return self.emit('error', new Error('get() requires key and callback arguments'));
+
+  debug('get: %s', key);
+
+  self.db.get(key, options, function(err, value) {
     if (err) return fn(err);
 
     debug('success get: %s -> %j', key, value);
     fn(null, self(value));
   });
+};
+
+/* get all models from the store
+ *
+ * ```javascript
+ * var cursor = require('level-cursor')
+ * cursor(User.get.all()).each(function (user) {}, function (err) {})
+ * ```
+ *
+ * @param {object} [options]
+ * @api public
+ */
+level_modella.getAll = function(self) {
+  return function(options) {
+    options = xtend(default_options, options);
+
+    debug('all');
+    var stream = self.db.createReadStream(options);
+
+    return stream.pipe(through(function(data, fn) {
+      debug('success get: %s -> %j', data.key, data.value);
+      fn(null, self(data.value));
+    }));
+  };
 };
 
 /* removes a model from the store
@@ -163,23 +191,23 @@ level_modella.remove = level_modella.del = function(options, fn) {
 /* get all models from the store
  *
  * ```javascript
- * var cursor = require('level-cursor')
- * cursor(user.all()).each(function (user) {}, function (err) {})
+ * User.remove.all(function (err) {})
  * ```
  *
  * @param {object} [options]
  * @api public
  */
-level_modella.all = function(options) {
-  options = xtend(default_options, options);
-  var self = this;
+level_modella.removeAll = function(self) {
+  return function(options, fn) {
+    fn = get_callback(options, fn);
+    options = xtend(default_options, options);
 
-  debug('all');
+    debug('remove.all');
 
-  return this.db.createReadStream(options).pipe(through(function(data, fn) {
-    debug('success get: %s -> %j', data.key, data.value);
-    fn(null, self(data.value));
-  }));
+    cursor(self.db.createKeyStream(options).pipe(through(function(key, fn) {
+      self.db.del(key, options, fn);
+    }))).all(fn);
+  };
 };
 
 /* closes all db instances

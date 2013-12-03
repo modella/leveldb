@@ -133,6 +133,24 @@ describe('remove', function() {
 
     store.remove.call(model);
   });
+
+  it('should remove all', function(done) {
+    var model = User(user);
+
+    model.save(function(err, model) {
+      if(err) return done(err);
+
+      User.remove.all(function(err){
+        if(err) return done(err);
+
+        cursor(User.get.all()).all(function(err, users){
+          if(err) return done(err);
+          assert(users.length === 0);
+          done();
+        });
+      });
+    });
+  });
 });
 
 describe('get', function() {
@@ -164,24 +182,15 @@ describe('get', function() {
 
     User.get();
   });
-});
-
-describe('all', function() {
-  beforeEach(use);
-  afterEach(close);
 
   it('should get all', function(done) {
     var model = User(user);
 
     model.save(function(err, model) {
       if(err) return done(err);
-      var called = false;
 
-      cursor(User.all()).each(function (user) {
-        called = true;
-        assert(user.primary() === model.primary());
-      }, function (err) {
-        assert(called);
+      cursor(User.get.all()).all(function(err, users){
+        assert(users[0].primary() === model.primary());
         done(err);
       });
     });

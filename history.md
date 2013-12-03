@@ -1,3 +1,9 @@
+0.3.0 / 2013-12-02
+==================
+
+ * add `Model.remove.all`
+ * rename `Model.all` to `Model.get.all`
+
 0.2.0 / 2013-12-02
 ==================
 

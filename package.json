@@ -1,6 +1,6 @@
 {
   "name": "level-modella",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "modella plugin for level",
   "keywords": [
     "level",
@@ -30,7 +30,8 @@
     "xtend": "2.1.x",
     "map-series": "0.0.x",
     "ordered-through": "0.0.x",
-    "level": "0.18.x"
+    "level": "0.18.x",
+    "level-cursor": "0.5.x"
   },
   "devDependencies": {
     "mocha-lcov-reporter": "0.0.x",
@@ -42,8 +43,7 @@
     "uid": "0.0.x",
     "level": "0.18.x",
     "leveldown": "0.10.x",
-    "mkdirp": "0.3.x",
-    "level-cursor": "0.5.x"
+    "mkdirp": "0.3.x"
   },
   "engines": {
     "node": ">=0.8"
