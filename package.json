@@ -1,6 +1,6 @@
 {
   "name": "level-modella",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "modella plugin for level",
   "keywords": [
     "level",
@@ -36,12 +36,11 @@
   "devDependencies": {
     "mocha-lcov-reporter": "0.0.x",
     "jscoverage": "0.3.x",
-    "coveralls": "2.0.x",
-    "mocha": "1.10.x",
+    "coveralls": "2.5.x",
+    "mocha": "1.15.x",
     "modella": "*",
     "pwd": "0.0.x",
     "uid": "0.0.x",
-    "level": "0.18.x",
     "leveldown": "0.10.x",
     "mkdirp": "0.3.x"
   },
