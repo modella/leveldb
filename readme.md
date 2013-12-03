@@ -1,10 +1,10 @@
 # level-modella
 
 [![NPM version](https://badge.fury.io/js/level-modella.png)](http://badge.fury.io/js/level-modella)
-[![Build Status](https://secure.travis-ci.org/ramitos/level-modella.png)](http://travis-ci.org/ramitos/level-modella)
-[![Dependency Status](https://gemnasium.com/ramitos/level-modella.png)](https://gemnasium.com/ramitos/level-modella)
-[![Coverage Status](https://coveralls.io/repos/ramitos/level-modella/badge.png?branch=master)](https://coveralls.io/r/ramitos/level-modella?branch=master)
-[![Code Climate](https://codeclimate.com/github/ramitos/level-modella.png)](https://codeclimate.com/github/ramitos/level-modella)
+[![Build Status](https://secure.travis-ci.org/modella/level-modella.png)](http://travis-ci.org/modella/level-modella)
+[![Dependency Status](https://gemnasium.com/modella/level-modella.png)](https://gemnasium.com/modella/level-modella)
+[![Coverage Status](https://coveralls.io/repos/modella/level-modella/badge.png?branch=master)](https://coveralls.io/r/modella/level-modella?branch=master)
+[![Code Climate](https://codeclimate.com/github/modella/level-modella.png)](https://codeclimate.com/github/modella/level-modella)
 
 [Level](https://github.com/level/level) plugin for [modella](https://github.com/modella/modella).
 
