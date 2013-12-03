@@ -70,6 +70,10 @@ Remove a model.
 
 Get a model. The object passes to the callback is a `Model` instance.
 
+### Model.all([options])
+
+Returns a stream that will emit a model instance on each `data` event. Accepted options are the [same](https://github.com/rvagg/node-levelup/#dbcreatereadstreamoptions) that levelup accepts.
+
 ### Model.db
 
 `level` instance

@@ -6,6 +6,7 @@ var mkdirp = require('mkdirp');
 var type = require('type-component');
 var leveldown = require('leveldown');
 var assert = require('assert');
+var cursor = require('level-cursor');
 var path = require('path');
 
 var User, location = path.join(__dirname, 'db'), user = {
@@ -39,6 +40,12 @@ afterEach(close);
 
 describe('store', function() {
   afterEach(close);
+
+  it('store() accept a string', function() {
+    User.use(store(location));
+    assert(User.db);
+    assert(User.db.location === location);
+  });
 
   it('store() should return a fn', function() {
     var db = level(location);
@@ -156,5 +163,27 @@ describe('get', function() {
     });
 
     User.get();
+  });
+});
+
+describe('all', function() {
+  beforeEach(use);
+  afterEach(close);
+
+  it('should get all', function(done) {
+    var model = User(user);
+
+    model.save(function(err, model) {
+      if(err) return done(err);
+      var called = false;
+
+      cursor(User.all()).each(function (user) {
+        called = true;
+        assert(user.primary() === model.primary());
+      }, function (err) {
+        assert(called);
+        done(err);
+      });
+    });
   });
 });

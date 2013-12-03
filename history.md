@@ -1,3 +1,10 @@
+0.2.0 / 2013-12-02
+==================
+
+ * also accept a string and create a level instance in that case
+ * add a streaming `.all`
+
+
 0.1.0 / 2013-12-01
 ==================
 

@@ -4,7 +4,9 @@
 var debug = require('debug')('modella:level'),
     type = require('type-component'),
     xtend = require('xtend'),
-    series = require('map-series');
+    through = require('ordered-through'),
+    series = require('map-series'),
+    level = require('level');
 
 // holds all the dbs, so that it can close them on process SIGTERM
 var dbs = [];
@@ -58,6 +60,9 @@ process.on('SIGTERM', close_all);
  * @api public
  */
 var level_modella = module.exports = function(db) {
+  if(type(db) === 'string')
+    db = level(db)
+
   dbs.push(db);
 
   return function(model) {
@@ -153,6 +158,28 @@ level_modella.remove = level_modella.del = function(options, fn) {
     debug('success remove: %s', key);
     fn(err);
   });
+};
+
+/* get all models from the store
+ *
+ * ```javascript
+ * var cursor = require('level-cursor')
+ * cursor(user.all()).each(function (user) {}, function (err) {})
+ * ```
+ *
+ * @param {object} [options]
+ * @api public
+ */
+level_modella.all = function(options) {
+  options = xtend(default_options, options);
+  var self = this;
+
+  debug('all');
+
+  return this.db.createReadStream(options).pipe(through(function(data, fn) {
+    debug('success get: %s -> %j', data.key, data.value);
+    fn(null, self(data.value));
+  }));
 };
 
 /* closes all db instances
