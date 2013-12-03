@@ -43,7 +43,7 @@
     "level": "0.18.x",
     "leveldown": "0.10.x",
     "mkdirp": "0.3.x",
-    "level-cursor": "0.5.x",
+    "level-cursor": "0.5.x"
   },
   "engines": {
     "node": ">=0.8"
