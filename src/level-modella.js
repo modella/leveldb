@@ -51,12 +51,26 @@ process.on('SIGTERM', close_all);
  */
 var level_modella = function (model) {
   if(!(this instanceof level_modella)) return new level_modella(model);
+  var self = this
 
-  model.get = this.get;
-  model.put = model.save = model.update = this.put;
-  model.del = model.remove = this.del;
-  model.get.all = this.getAll.bind(model);
-  model.remove.all = model.del.all = this.delAll.bind(model);
+  model.get = function () {
+    return self.get.apply(this, arguments);
+  };
+
+  model.get.all = function () {
+    return self.getAll.apply(self, arguments);
+  };
+
+  model.del = model.remove = function () {
+    return self.del.apply(this, arguments);
+  };
+
+  model.del.all = model.remove.all = function () {
+    return self.delAll.apply(self, arguments);
+  };
+
+  model.put = model.save = model.update = self.put;
+  self.model = model;
 };
 
 /* save a model into the store
@@ -132,11 +146,13 @@ level_modella.prototype.getAll = function(options) {
   var self = this;
 
   debug('all');
-  var stream = self.db.createReadStream(options);
+
+  var stream = self.model.db.createReadStream(options);
+  //console.log(stream)
 
   return stream.pipe(through(function(data, fn) {
     debug('success get: %s -> %j', data.key, data.value);
-    fn(null, self(data.value));
+    fn(null, self.model(data.value));
   }));
 };
 
@@ -184,8 +200,8 @@ level_modella.prototype.delAll = function(options, fn) {
 
   debug('remove.all');
 
-  cursor(self.db.createKeyStream(options).pipe(through(function(key, fn) {
-    self.db.del(key, options, fn);
+  cursor(self.model.db.createKeyStream(options).pipe(through(function(key, fn) {
+    self.model.db.del(key, options, fn);
   }))).all(fn);
 };
 
