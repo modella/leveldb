@@ -43,39 +43,20 @@ function close_all(done) {
 
 process.on('SIGTERM', close_all);
 
-
-/* exports a function to be passed to `Model.use`
+/* level_modella costructor
  *
- * ```javascript
- * var level_modella = require('level-modella')
- * var modella = require('modella')
- * var level = require('level')
- *
- * User = modella('User');
- *
- * User.use(level_modella(level))
- * ```
- *
+ * @param {object} model
  * @param {object} db
- * @return {fn}
- * @api public
+ * @api private
  */
-var level_modella = module.exports = function(db) {
-  if(type(db) === 'string')
-    db = level(db)
+var level_modella = function (model) {
+  if(!(this instanceof level_modella)) return new level_modella(model);
 
-  dbs.push(db);
-
-  return function(model) {
-    model.db = db;
-
-    Object.keys(level_modella).forEach(function(proto) {
-      model[proto] = level_modella[proto];
-    });
-
-    model.get.all = level_modella.getAll(model);
-    model.remove.all = level_modella.removeAll(model);
-  };
+  model.get = this.get;
+  model.put = model.save = model.update = this.put;
+  model.del = model.remove = this.del;
+  model.get.all = this.getAll.bind(model);
+  model.remove.all = model.del.all = this.delAll.bind(model);
 };
 
 /* save a model into the store
@@ -88,7 +69,7 @@ var level_modella = module.exports = function(db) {
  * @param {function} fn
  * @api public
  */
-level_modella.put = level_modella.save = level_modella.update = function(options, fn) {
+level_modella.prototype.put = function(options, fn) {
   fn = get_callback(options, fn);
   options = xtend(default_options, options);
 
@@ -118,7 +99,7 @@ level_modella.put = level_modella.save = level_modella.update = function(options
  * @param {function} fn
  * @api public
  */
-level_modella.get = function(key, options, fn) {
+level_modella.prototype.get = function(key, options, fn) {
   fn = get_callback(options, fn);
   options = xtend(default_options, options);
   var self = this;
@@ -146,18 +127,17 @@ level_modella.get = function(key, options, fn) {
  * @param {object} [options]
  * @api public
  */
-level_modella.getAll = function(self) {
-  return function(options) {
-    options = xtend(default_options, options);
+level_modella.prototype.getAll = function(options) {
+  options = xtend(default_options, options);
+  var self = this;
 
-    debug('all');
-    var stream = self.db.createReadStream(options);
+  debug('all');
+  var stream = self.db.createReadStream(options);
 
-    return stream.pipe(through(function(data, fn) {
-      debug('success get: %s -> %j', data.key, data.value);
-      fn(null, self(data.value));
-    }));
-  };
+  return stream.pipe(through(function(data, fn) {
+    debug('success get: %s -> %j', data.key, data.value);
+    fn(null, self(data.value));
+  }));
 };
 
 /* removes a model from the store
@@ -170,7 +150,7 @@ level_modella.getAll = function(self) {
  * @param {function} fn
  * @api public
  */
-level_modella.remove = level_modella.del = function(options, fn) {
+level_modella.prototype.del = function(options, fn) {
   fn = get_callback(options, fn);
   options = xtend(default_options, options);
 
@@ -197,16 +177,44 @@ level_modella.remove = level_modella.del = function(options, fn) {
  * @param {object} [options]
  * @api public
  */
-level_modella.removeAll = function(self) {
-  return function(options, fn) {
-    fn = get_callback(options, fn);
-    options = xtend(default_options, options);
+level_modella.prototype.delAll = function(options, fn) {
+  fn = get_callback(options, fn);
+  options = xtend(default_options, options);
+  var self = this;
 
-    debug('remove.all');
+  debug('remove.all');
 
-    cursor(self.db.createKeyStream(options).pipe(through(function(key, fn) {
-      self.db.del(key, options, fn);
-    }))).all(fn);
+  cursor(self.db.createKeyStream(options).pipe(through(function(key, fn) {
+    self.db.del(key, options, fn);
+  }))).all(fn);
+};
+
+/* exports a function to be passed to `Model.use`
+ *
+ * ```javascript
+ * var level_modella = require('level-modella')
+ * var modella = require('modella')
+ * var level = require('level')
+ *
+ * User = modella('User');
+ *
+ * User.use(level_modella(level))
+ * ```
+ *
+ * @param {object} db
+ * @return {fn}
+ * @api public
+ */
+module.exports = function(db){
+  if(type(db) === 'string')
+    db = level(db);
+
+  dbs.push(db);
+
+  return function(model) {
+    model.db = db;
+    level_modella(model);
+    return model;
   };
 };
 

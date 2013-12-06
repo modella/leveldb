@@ -63,7 +63,7 @@ describe('store', function() {
 
   it('close all', function(done) {
     User.use(store(level(location)));
-    User.__close_all(done);
+    store.__close_all(done);
   });
 });
 
@@ -98,7 +98,7 @@ describe('put', function() {
       done();
     });
 
-    store.save.call(model);
+    store(model.model.db)(User).save.call(model);
   });
 });
 
@@ -131,7 +131,7 @@ describe('remove', function() {
       done();
     });
 
-    store.remove.call(model);
+    store(model.model.db)(User).remove.call(model);
   });
 
   it('should remove all', function(done) {
