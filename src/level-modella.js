@@ -69,6 +69,7 @@ var level_modella = function (model) {
     return self.delAll.apply(self, arguments);
   };
 
+  model.all = model.get.all
   model.put = model.save = model.update = self.put;
   self.model = model;
 };
