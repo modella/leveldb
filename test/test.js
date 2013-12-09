@@ -153,6 +153,42 @@ describe('remove', function() {
   });
 });
 
+describe('raw', function() {
+  beforeEach(use);
+  afterEach(close);
+
+  it('get', function(done) {
+    var model = User(user);
+
+    model.save(function(err, model) {
+      if(err) return done(err);
+
+      User.get(model.id(), {raw: true}, function(err, value) {
+        if(err) return done(err);
+
+        assert(value.id === model.id());
+        assert(value.name === model.name());
+
+        done();
+      });
+    });
+  });
+
+  it('get all', function(done) {
+    var model = User(user);
+
+    model.save(function(err, model) {
+      if(err) return done(err);
+
+      cursor(User.get.all({raw: true})).all(function(err, users){
+        assert(users[0].id === model.primary());
+        done(err);
+      });
+    });
+  });
+});
+
+
 describe('get', function() {
   beforeEach(use);
   afterEach(close);

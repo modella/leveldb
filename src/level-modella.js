@@ -126,6 +126,7 @@ level_modella.prototype.get = function(key, options, fn) {
 
   self.db.get(key, options, function(err, value) {
     if (err) return fn(err);
+    if (options.raw) return fn(err, value);
 
     debug('success get: %s -> %j', key, value);
     fn(null, self(value));
@@ -145,11 +146,13 @@ level_modella.prototype.get = function(key, options, fn) {
 level_modella.prototype.getAll = function(options) {
   options = xtend(default_options, options);
   var self = this;
+  var db = self.model.db;
 
   debug('all');
 
-  var stream = self.model.db.createReadStream(options);
-  //console.log(stream)
+  var stream = options.raw ? db.createValueStream(options) : db.createReadStream(options);
+
+  if (options.raw) return stream;
 
   return stream.pipe(through(function(data, fn) {
     debug('success get: %s -> %j', data.key, data.value);
