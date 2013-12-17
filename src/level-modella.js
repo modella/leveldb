@@ -150,11 +150,15 @@ level_modella.prototype.getAll = function(options) {
 
   debug('all');
 
-  var stream = options.raw ? db.createValueStream(options) : db.createReadStream(options);
+  if (options.raw && !options.keys) {
+    return db.createValueStream(options);
+  }
 
-  if (options.raw) return stream;
+  if (options.raw && options.keys) {
+    return db.createKeyStream(options);
+  }
 
-  return stream.pipe(through(function(data, fn) {
+  return db.createReadStream(options).pipe(through(function(data, fn) {
     debug('success get: %s -> %j', data.key, data.value);
     fn(null, self.model(data.value));
   }));
