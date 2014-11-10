@@ -1,4 +1,10 @@
 
+0.1.0 / 2014-11-10
+==================
+
+  * update modella-leveldb to work with node 0.11.x.
+  * use sublevels by default
+
 0.0.5 / 2013-11-15
 ==================
 
