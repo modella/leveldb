@@ -3,7 +3,8 @@
  */
 
 var debug = require('debug')('modella:leveldb');
-var level = require('level');
+var sublevel = require('level-sub');
+var level = require('level-11');
 var sync = {};
 
 /**
@@ -20,7 +21,7 @@ module.exports = function(path, options) {
   process.on('SIGTERM', db.close.bind(this));
 
   return function(model) {
-    model.db = db;
+    model.db = sublevel(db).sublevel('modella').sublevel(model.modelName);
     for (fn in sync) model[fn] = sync[fn];
   };
 };
@@ -30,13 +31,14 @@ module.exports = function(path, options) {
  */
 
 sync.all = function(options, fn) {
+  var model = this;
+
   if (arguments.length == 1) {
     fn = options;
     options = {};
   }
 
   debug('getting all data with options %j', options);
-
   var rs = this.db.createReadStream(options);
   var buffer = [];
 
@@ -49,7 +51,7 @@ sync.all = function(options, fn) {
   });
 
   rs.on('end', function() {
-    return fn(null, buffer);
+    return fn(null, buffer.map(model));
   });
 };
 
@@ -57,8 +59,10 @@ sync.all = function(options, fn) {
  * Get
  */
 
-sync.get = function(key, options, fn) {
+sync.get =
+sync.find = function(key, options, fn) {
   var db = this.db;
+  var model = this;
 
   if(arguments.length == 2) {
     fn = options;
@@ -66,11 +70,11 @@ sync.get = function(key, options, fn) {
   }
 
   debug('getting %j with %j options...', key, options);
-  db.get(key, options, function(err, model) {
+  db.get(key, options, function(err, json) {
     if(err) return fn(err);
-    else if(!model) return fn(null, false);
-    debug('got %j', model);
-    return fn(null, model);
+    else if(!json) return fn(null, false);
+    debug('got %j', json);
+    return fn(null, model(json));
   });
 };
 

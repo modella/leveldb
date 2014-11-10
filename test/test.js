@@ -14,6 +14,14 @@ var User = model('user')
 
 User.use(level);
 
+var Task = model('task')
+  .attr('id')
+  .attr('title')
+  .attr('description')
+  .attr('price')
+
+Task.use(level);
+
 /**
  * Initialize
  */
@@ -25,13 +33,42 @@ user.id(uid(6))
     .email('mattmuelle@gmail.com')
     .password('test');
 
-// user.save(function(err, user) {
-//   console.log(user);
-// });
+var task = new Task
 
-User.all(function(err, users) {
-  console.log(users);
+task.id(uid(6))
+  .title('scraper needed')
+  .description('some description')
+  .price(65)
+
+var pending = 2
+
+user.save(function(err, user) {
+  if (err) throw err;
+  next();
 });
+
+task.save(function(err, task) {
+  if (err) throw err;
+  next();
+})
+
+function next() {
+  if (!--pending) return;
+
+  User.all(function(err, users) {
+    // console.log('users', users);
+  });
+
+  Task.all(function(err, tasks) {
+    console.log('tasks', tasks[0].toJSON());
+  });
+
+  Task.get('bls8pb', function(err, task) {
+    if (err) throw err;
+    // console.log(task.toJSON());
+  });
+}
+
 
 // User.find('ewcbix', function(err, user) {
 //   if (err) throw err;
