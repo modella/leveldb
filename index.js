@@ -5,6 +5,7 @@
 var debug = require('debug')('modella:leveldb');
 var sublevel = require('level-sub');
 var level = require('level-11');
+var noop = function() {};
 var sync = {};
 
 /**
@@ -29,12 +30,15 @@ module.exports = function(path, options) {
  */
 
 sync.all = function(options, fn) {
-  var model = this;
+  options = options || {}
+  fn = fn || noop;
 
-  if (arguments.length == 1) {
+  if ('function' == typeof options) {
     fn = options;
     options = {};
   }
+
+  var model = this;
 
   // default options
   options.valueEncoding = options.valueEncoding || 'json';
@@ -62,13 +66,16 @@ sync.all = function(options, fn) {
 
 sync.get =
 sync.find = function(key, options, fn) {
-  var db = this.db;
-  var model = this;
+  options = options || {};
+  fn = fn || noop;
 
-  if(arguments.length == 2) {
+  if('function' == typeof options) {
     fn = options;
     options = {};
   }
+
+  var db = this.db;
+  var model = this;
 
   // default options
   options.encoding = options.encoding || 'json';
@@ -96,7 +103,10 @@ sync.removeAll = function(query, fn) {
 
 sync.save =
 sync.update = function(options, fn) {
-  if (1 == arguments.length) {
+  options = options || {};
+  fn = fn || noop;
+
+  if ('function' == typeof options) {
     fn = options;
     options = {};
   }
@@ -111,7 +121,10 @@ sync.update = function(options, fn) {
   this.model.db.put(id, json, options, function(err) {
     if(err) return fn(err);
     debug('saved %j', json);
-    return fn(null, json);
+    // do not pass body through,
+    // modella messes with the primary key
+    // when it's not an id
+    return fn();
   });
 };
 
@@ -120,7 +133,10 @@ sync.update = function(options, fn) {
  */
 
 sync.remove = function(options, fn) {
-  if (1 == arguments.length) {
+  options = options || {};
+  fn = fn || noop;
+
+  if ('function' == typeof options) {
     fn = options;
     options = {};
   }
