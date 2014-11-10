@@ -16,10 +16,7 @@ module.exports = function(path, options) {
   options.valueEncoding = options.valueEncoding || 'json';
 
   // allow you to pass your own instance in
-  var db = path.db ? path : level(path, options);
-
-  // automatically cleanup on termination
-  process.on('SIGTERM', db.close.bind(this));
+  var db = path.get && path.put ? path : level(path, options);
 
   return function(model) {
     model.db = sublevel(db).sublevel('modella').sublevel(model.modelName);
