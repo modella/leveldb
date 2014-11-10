@@ -15,7 +15,8 @@ module.exports = function(path, options) {
   options = options || {};
   options.valueEncoding = options.valueEncoding || 'json';
 
-  var db = level(path, options);
+  // allow you to pass your own instance in
+  var db = path.db ? path : level(path, options);
 
   // automatically cleanup on termination
   process.on('SIGTERM', db.close.bind(this));
@@ -37,6 +38,9 @@ sync.all = function(options, fn) {
     fn = options;
     options = {};
   }
+
+  // default options
+  options.valueEncoding = options.valueEncoding || 'json';
 
   debug('getting all data with options %j', options);
   var rs = this.db.createReadStream(options);
@@ -69,6 +73,9 @@ sync.find = function(key, options, fn) {
     options = {};
   }
 
+  // default options
+  options.encoding = options.encoding || 'json';
+
   debug('getting %j with %j options...', key, options);
   db.get(key, options, function(err, json) {
     if(err) return fn(err);
@@ -97,10 +104,14 @@ sync.update = function(options, fn) {
     options = {};
   }
 
+  // default options
+  options.encoding = options.encoding || 'json';
+
   var json = this.toJSON();
   debug('saving... %j', json);
+
   var id = this.primary();
-  this.model.db.put(id, json, function(err) {
+  this.model.db.put(id, json, options, function(err) {
     if(err) return fn(err);
     debug('saved %j', json);
     return fn(null, json);

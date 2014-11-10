@@ -3,7 +3,8 @@
  */
 
 var model = require('modella');
-var level = require('../')(__dirname + '/mydb');
+var leveldb = require('level-11')(__dirname + '/mydb');
+var level = require('../')(leveldb);
 var uid = require('uid');
 
 var User = model('user')
@@ -60,12 +61,13 @@ function next() {
   });
 
   Task.all(function(err, tasks) {
-    console.log('tasks', tasks[0].toJSON());
+    // console.log(tasks);
+    // console.log('tasks', tasks[0].toJSON());
   });
 
-  Task.get('bls8pb', function(err, task) {
+  Task.get('oy3h62', function(err, task) {
     if (err) throw err;
-    // console.log(task.toJSON());
+    console.log(task.toJSON());
   });
 }
 
