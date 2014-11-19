@@ -39,17 +39,33 @@ user.save(function(err) {
 
 ## API
 
-### Level(path, options)
+### Level(path|db, options)
 
 Initialize leveldb with a `path` to the database. If path doesn't exist, it will be created. `options` will be passed through to [levelup](https://github.com/rvagg/node-levelup)
+
+Alternatively, you can pass your own level `db` instance in.
+
+### Model.index(index, opts)
+
+Create a secondary `index` using [leveldex](https://github.com/lapwinglabs/leveldex). You may ensure that key is unique by passing `unique : true` in `opts`.
+
+```js
+User.index('email', { unique: true });
+```
 
 ### Model.all([options], fn)
 
 Get all models (static method)
 
-### Model.find(id, [options], fn)
+### Model.find(id|object, [options], fn)
 
-Find a model (static method)
+Find a model (static method).
+
+If you provide a secondary index, you can search by that key:
+
+```js
+Model.find({ email: 'hi@lapwinglabs.com' } , fn);
+```
 
 ### model.save([options], fn)
 

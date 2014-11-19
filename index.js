@@ -3,6 +3,7 @@
  */
 
 var debug = require('debug')('modella:leveldb');
+var indexing = require('leveldex');
 var sublevel = require('level-sub');
 var level = require('level-11');
 var noop = function() {};
@@ -20,9 +21,26 @@ module.exports = function(path, options) {
   var db = path.get && path.put ? path : level(path, options);
 
   return function(model) {
-    model.db = sublevel(db).sublevel('modella').sublevel(model.modelName);
+    model.db = sublevel(db).sublevel(model.modelName);
+    indexing(model.db);
     for (fn in sync) model[fn] = sync[fn];
   };
+};
+
+/**
+ * Index
+ */
+
+sync.index = function(key, opts) {
+  opts = opts || {};
+
+  // index the DB usuing level-indexing
+  this.db.index(key);
+
+  // ensure the key is unique
+  opts.unique && this.db.unique(key);
+
+  return this;
 };
 
 /**
@@ -81,12 +99,23 @@ sync.find = function(key, options, fn) {
   options.encoding = options.encoding || 'json';
 
   debug('getting %j with %j options...', key, options);
-  db.get(key, options, function(err, json) {
-    if(err) return fn(err);
-    else if(!json) return fn(null, false);
-    debug('got %j', json);
-    return fn(null, model(json));
-  });
+
+  if ('object' == typeof key) {
+    var k = Object.keys(key)[0];
+    var v = key[k];
+    db.by(k, v, options, function(err, json) {
+      if (err) return err.notFound ? fn(null, null) : fn(err);
+      debug('got %j', json);
+      return fn(null, model(json));
+    });
+  } else {
+    db.get(key, options, function(err, json) {
+      if (err) return err.notFound ? fn(null, null) : fn(err);
+      debug('got %j', json);
+      return fn(null, model(json));
+    });
+  }
+
 };
 
 /**
@@ -94,7 +123,15 @@ sync.find = function(key, options, fn) {
  */
 
 sync.removeAll = function(query, fn) {
-  throw new Error('model.removeAll not implemented');
+  throw new Error('model.removeAll not yet implemented');
+};
+
+/**
+ * batch
+ */
+
+sync.batch = function () {
+  throw new Error('model.batch not yet implemented');
 };
 
 /**
