@@ -1,4 +1,9 @@
 
+0.1.4 / 2014-11-19
+==================
+
+  * basic implementation of secondary indexing
+
 0.1.3 / 2014-11-10
 ==================
 
